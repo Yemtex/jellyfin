@@ -433,12 +433,23 @@ namespace MediaBrowser.MediaEncoding.Encoder
 
         internal string GetExtraArguments(MediaInfoRequest request)
         {
-            var ffmpegAnalyzeDuration = _config.GetFFmpegAnalyzeDuration() ?? string.Empty;
+            var ffmpegAnalyzeDuration = _config.GetFFmpegAnalyzeDuration();
+            var ffmpegLiveTvAnalyzeDuration = _config.GetFFmpegLiveTvAnalyzeDuration();
             var ffmpegProbeSize = _config.GetFFmpegProbeSize() ?? string.Empty;
             var analyzeDuration = string.Empty;
             var extraArgs = string.Empty;
 
-            if (request.MediaSource.AnalyzeDurationMs > 0)
+            var isLiveStream = request.MediaSource.IsInfiniteStream || request.MediaSource.RequiresOpening;
+
+            if (isLiveStream && !string.IsNullOrEmpty(ffmpegLiveTvAnalyzeDuration))
+            {
+                analyzeDuration = "-analyzeduration " + ffmpegLiveTvAnalyzeDuration;
+            }
+            else if (isLiveStream && !string.IsNullOrEmpty(ffmpegAnalyzeDuration) && !string.Equals(ffmpegAnalyzeDuration, "200M", StringComparison.OrdinalIgnoreCase))
+            {
+                analyzeDuration = "-analyzeduration " + ffmpegAnalyzeDuration;
+            }
+            else if (request.MediaSource.AnalyzeDurationMs > 0)
             {
                 analyzeDuration = "-analyzeduration " + (request.MediaSource.AnalyzeDurationMs * 1000);
             }

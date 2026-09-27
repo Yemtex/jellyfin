@@ -7291,9 +7291,20 @@ namespace MediaBrowser.Controller.MediaEncoding
 
             // Apply -analyzeduration as per the environment variable,
             // otherwise ffmpeg will break on certain files due to default value is 0.
-            var ffmpegAnalyzeDuration = _config.GetFFmpegAnalyzeDuration() ?? string.Empty;
+            var ffmpegAnalyzeDuration = _config.GetFFmpegAnalyzeDuration();
+            var ffmpegLiveTvAnalyzeDuration = _config.GetFFmpegLiveTvAnalyzeDuration();
 
-            if (state.MediaSource.AnalyzeDurationMs > 0)
+            var isLiveStream = state.MediaSource.IsInfiniteStream || state.MediaSource.RequiresOpening;
+
+            if (isLiveStream && !string.IsNullOrEmpty(ffmpegLiveTvAnalyzeDuration))
+            {
+                analyzeDurationArgument = "-analyzeduration " + ffmpegLiveTvAnalyzeDuration;
+            }
+            else if (isLiveStream && !string.IsNullOrEmpty(ffmpegAnalyzeDuration) && !string.Equals(ffmpegAnalyzeDuration, "200M", StringComparison.OrdinalIgnoreCase))
+            {
+                analyzeDurationArgument = "-analyzeduration " + ffmpegAnalyzeDuration;
+            }
+            else if (state.MediaSource.AnalyzeDurationMs > 0)
             {
                 analyzeDurationArgument = "-analyzeduration " + (state.MediaSource.AnalyzeDurationMs.Value * 1000).ToString(CultureInfo.InvariantCulture);
             }

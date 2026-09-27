@@ -40,6 +40,11 @@ namespace MediaBrowser.Controller.Extensions
         public const string FfmpegAnalyzeDurationKey = "FFmpeg:analyzeduration";
 
         /// <summary>
+        /// The key for the FFmpeg analyze duration option for live TV.
+        /// </summary>
+        public const string FfmpegLiveTvAnalyzeDurationKey = "FFmpeg:livetvanalyzeduration";
+
+        /// <summary>
         /// The key for the FFmpeg image extraction performance tradeoff option.
         /// </summary>
         public const string FfmpegImgExtractPerfTradeoffKey = "FFmpeg:imgExtractPerfTradeoff";
@@ -98,6 +103,14 @@ namespace MediaBrowser.Controller.Extensions
         /// <returns>The FFmpeg analyze duration option.</returns>
         public static string? GetFFmpegAnalyzeDuration(this IConfiguration configuration)
             => configuration[FfmpegAnalyzeDurationKey];
+
+        /// <summary>
+        /// Gets the FFmpeg analyze duration for live TV from the <see cref="IConfiguration" />.
+        /// </summary>
+        /// <param name="configuration">The configuration to read the setting from.</param>
+        /// <returns>The FFmpeg live TV analyze duration option.</returns>
+        public static string? GetFFmpegLiveTvAnalyzeDuration(this IConfiguration configuration)
+            => configuration[FfmpegLiveTvAnalyzeDurationKey];
 
         /// <summary>
         /// Gets a value indicating whether the server should validate FFmpeg during startup.
