@@ -163,6 +163,26 @@ public class EncodingHelperTests
         Assert.Contains("-map 1:1", args, StringComparison.Ordinal);
     }
 
+    [Fact]
+    public void GetMapArgs_VideoStreamIndexNegativeOne_MapsFirstVideoAndAudio()
+    {
+        var state = BuildState(subtitle: null, deliveryMethod: null);
+        state.VideoStream!.Index = -1;
+        var args = CreateHelper().GetMapArgs(state);
+
+        Assert.Equal("-map 0:v:0 -map 0:a:0 -sn", args);
+    }
+
+    [Fact]
+    public void GetMapArgs_AudioStreamIndexNegativeOne_MapsVideoAndFirstAudio()
+    {
+        var state = BuildState(subtitle: null, deliveryMethod: null);
+        state.AudioStream!.Index = -1;
+        var args = CreateHelper().GetMapArgs(state);
+
+        Assert.Equal("-map 0:0 -map 0:a:0 -sn", args);
+    }
+
     [Theory]
     [InlineData(SubtitleDeliveryMethod.Embed, true, "movie.idx")]
     [InlineData(SubtitleDeliveryMethod.Encode, true, "movie.idx")]

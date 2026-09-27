@@ -3097,13 +3097,35 @@ namespace MediaBrowser.Controller.MediaEncoding
             // We have media info, but we don't know the stream index
             if (state.VideoStream is not null && state.VideoStream.Index == -1)
             {
-                return "-sn";
+                var map = "-map 0:v:0";
+                if (state.AudioStream is not null)
+                {
+                    map += " -map 0:a:0";
+                }
+                else
+                {
+                    map += " -an";
+                }
+
+                return map + " -sn";
             }
 
             // We have media info, but we don't know the stream index
             if (state.AudioStream is not null && state.AudioStream.Index == -1)
             {
-                return state.IsInputVideo ? "-sn" : string.Empty;
+                var map = string.Empty;
+                if (state.VideoStream is not null)
+                {
+                    int videoStreamIndex = FindIndex(state.MediaSource.MediaStreams, state.VideoStream);
+                    map += string.Format(CultureInfo.InvariantCulture, "-map 0:{0}", videoStreamIndex);
+                }
+                else
+                {
+                    map += "-vn";
+                }
+
+                map += " -map 0:a:0";
+                return map + (state.IsInputVideo ? " -sn" : string.Empty);
             }
 
             var args = string.Empty;
